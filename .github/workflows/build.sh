@@ -184,7 +184,7 @@ body {
     <div id="file-list"></div>
   </div>
   <div id="main">
-    <div id="breadcrumb"><a onclick="loadPage('README.md')">Home</a></div>
+    <div id="breadcrumb"><a onclick="loadPage('wiki/index.md')">Home</a></div>
     <div id="content">Select a page from the sidebar.</div>
   </div>
 </div>
@@ -195,7 +195,6 @@ const EXPECTED_PASS = '{{PASS_HASH}}';
 const REPO_RAW = 'https://raw.githubusercontent.com/jamesjfoong/personal-wiki/master';
 const MANIFEST = {{MANIFEST}};
 
-// Auth
 async function sha256(text) {
   const buf = new TextEncoder().encode(text);
   const hash = await crypto.subtle.digest('SHA-256', buf);
@@ -223,11 +222,9 @@ async function doLogin() {
   }
 })();
 
-// App
 function initApp() {
   renderSidebar(MANIFEST);
   document.getElementById('file-count').textContent = MANIFEST.length + ' pages';
-  // Load first page or from hash
   const hash = location.hash.slice(1);
   if (hash) loadPage(decodeURIComponent(hash));
   else if (MANIFEST.length > 0) loadPage(MANIFEST[0]);
@@ -251,7 +248,6 @@ async function loadPage(file) {
   try {
     const res = await fetch(REPO_RAW + '/' + file);
     const md = await res.text();
-    // Convert wikilinks [[Page]] to clickable spans
     const linked = md.replace(/\[\[([^\]]+)\]\]/g, (m, name) => {
       return `<span class="wiki-link" onclick="findAndLoad('${name}')">${name}</span>`;
     });
@@ -259,7 +255,6 @@ async function loadPage(file) {
     document.getElementById('content').innerHTML = html;
     document.getElementById('breadcrumb').innerHTML = `<a onclick="loadPage('${file}')">${file}</a>`;
     location.hash = encodeURIComponent(file);
-    // Highlight active
     document.querySelectorAll('#file-list a').forEach(a => {
       a.classList.toggle('active', a.dataset.file === file);
     });
@@ -268,13 +263,11 @@ async function loadPage(file) {
   }
 }
 function findAndLoad(name) {
-  // Try exact match, then partial
   const exact = MANIFEST.find(f => f.toLowerCase().endsWith(name.toLowerCase() + '.md'));
   if (exact) { loadPage(exact); return; }
   const partial = MANIFEST.find(f => f.toLowerCase().includes(name.toLowerCase()));
   if (partial) loadPage(partial);
 }
-// Handle Enter on login inputs
 document.getElementById('login-pass').addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
 </script>
 
@@ -282,6 +275,18 @@ document.getElementById('login-pass').addEventListener('keypress', e => { if (e.
 </html>
 TEMPLATE
 
-sed -i "s/{{USER_HASH}}/$USER_HASH/g" index.html
-sed -i "s/{{PASS_HASH}}/$PASS_HASH/g" index.html
-sed -i "s/{{MANIFEST}}/$MANIFEST/g" index.html
+# Use python3 for safe multi-pattern replacement (sed chokes on JSON slashes)
+python3 << PYEOF
+import sys
+
+with open('index.html', 'r') as f:
+    text = f.read()
+
+text = text.replace('{{USER_HASH}}', sys.argv[1])
+text = text.replace('{{PASS_HASH}}', sys.argv[2])
+text = text.replace('{{MANIFEST}}', sys.argv[3])
+
+with open('index.html', 'w') as f:
+    f.write(text)
+PYEOF
+ "$USER_HASH" "$PASS_HASH" "$MANIFEST"
