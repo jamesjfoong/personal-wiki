@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "updated": "2026-06-25",
+  "base_raw_url": "https://raw.githubusercontent.com/jamesjfoong/personal-wiki/master",
+  "entrypoints": {
+    "index": "wiki/index.md",
+    "log": "wiki/log.md",
+    "repo_reviews": {
+      "GDP-ADMIN/CATAPA-WEB": "repos/catapa-web/review.md",
+      "GDP-ADMIN/CATAPA-WEB-LIB": "repos/catapa-web-lib/review.md",
+      "GDP-ADMIN/CATAPA-EXTENSION": "repos/catapa-extension/review.md"
+    },
+    "patterns": [
+      "patterns/ngmodel-store-flow.md",
+      "patterns/e2e-tenant-agnostic.md"
+    ]
+  }
+}
