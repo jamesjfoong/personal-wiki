@@ -276,7 +276,7 @@ document.getElementById('login-pass').addEventListener('keypress', e => { if (e.
 TEMPLATE
 
 # Use python3 for safe multi-pattern replacement (sed chokes on JSON slashes)
-python3 << PYEOF
+python3 - "$USER_HASH" "$PASS_HASH" "$MANIFEST" << 'PYEOF'
 import sys
 
 with open('index.html', 'r') as f:
@@ -289,4 +289,3 @@ text = text.replace('{{MANIFEST}}', sys.argv[3])
 with open('index.html', 'w') as f:
     f.write(text)
 PYEOF
- "$USER_HASH" "$PASS_HASH" "$MANIFEST"
