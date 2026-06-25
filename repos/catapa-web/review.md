@@ -21,8 +21,8 @@ tags: [repo, catapa-web, review]
 These are intentional patterns — do not flag in review:
 
 - **One-way `[ngModel]` with store flow** — if component dispatches `formSectionValueChanges` + `saveFormSection`, and model has default reducer value. Flow: `store → [ngModel] → input → formSectionValueChanges → reducer → store`. See [[ngmodel-store-flow]].
-- **Do not add defensive null guards where domain contract guarantees a value** — if reviewer/owner confirms a value cannot be null (for example authenticated user inside authenticated batch flow), do not request optional chaining or fallback logic just for theoretical null cases. Match existing codebase contracts and nearby module patterns.
-- **Check TypeScript visibility before flagging API bypasses** — `protected` / `private` members are not consumer-callable. Do not flag protected helper methods as public bypass surfaces; only public methods are review-relevant unless subclass behavior exposes them.
+- **CATAPA-WEB domain contracts beat defensive null guards** — do not request optional chaining or fallback logic for values that this repo treats as guaranteed by flow/contract (for example authenticated user inside authenticated batch flow). Match nearby module patterns and owner-reviewed contracts.
+- **CATAPA-WEB Storage subclasses: review public API only** — when reviewing wrappers/subclasses such as storage adapters, check TypeScript visibility first. Do not flag `protected` / `private` helper methods as consumer bypass paths; only public methods are review-relevant unless subclass behavior exposes them.
 
 ## Always Flag
 
