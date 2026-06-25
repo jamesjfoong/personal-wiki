@@ -21,8 +21,8 @@ tags: [repo, catapa-web, review]
 These are intentional patterns — do not flag in review:
 
 - **One-way `[ngModel]` with store flow** — if component dispatches `formSectionValueChanges` + `saveFormSection`, and model has default reducer value. Flow: `store → [ngModel] → input → formSectionValueChanges → reducer → store`. See [[ngmodel-store-flow]].
-- **BatchStorage current user** (`GDP-ADMIN/CATAPA-WEB#12338`) — do not flag missing null guard for `authentication.currentUser`; reviewer/Felix confirmed current user is guaranteed non-null in this context. Keep consistent with `GDP-ADMIN/CATAPA-WEB-LIB#514`: do not ask for impossible-null guards.
-- **Storage protected methods** (`GDP-ADMIN/CATAPA-WEB#12338`) — do not flag `serialize` / `unserialize` as public bypass paths. Felix confirmed they are `protected` on abstract `Storage`; public API is only `set`, `get`, `delete`, `hasKey`, `clear`, all overridden by `BatchStorage`.
+- **Do not add defensive null guards where domain contract guarantees a value** — if reviewer/owner confirms a value cannot be null (for example authenticated user inside authenticated batch flow), do not request optional chaining or fallback logic just for theoretical null cases. Match existing codebase contracts and nearby module patterns.
+- **Check TypeScript visibility before flagging API bypasses** — `protected` / `private` members are not consumer-callable. Do not flag protected helper methods as public bypass surfaces; only public methods are review-relevant unless subclass behavior exposes them.
 
 ## Always Flag
 
