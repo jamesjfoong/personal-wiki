@@ -45,3 +45,4 @@ updated: 2026-08-10
 
 - The standalone `common/agents/catapa_api_agent` package may need test-only extras when run directly, for example: `uv run --with pytest --with pytest-asyncio --with 'glaip-sdk[local]' pytest tests -q`.
 - For CATAPA API docs generator changes, pair common-agent checks (`uv run --with pytest --with pytest-asyncio --with ruff --with pyyaml --with 'glaip-sdk[local]' ruff check ...` plus relevant pytest files) with the consumer DE `make generate-api-docs` target and verify no generated JSON diff remains.
+- When a DE consumes `common/agents/catapa_api_agent` through a tracked symlink, the consumer `pyproject.toml` still needs a local uv path dependency (`catapa-api-agent = { path = "../../agents/catapa_api_agent" }`). The common package uses absolute `catapa_api_agent.*` imports, so `make test`/CI can fail with `ModuleNotFoundError: No module named 'catapa_api_agent'` unless the local package is installed into the app environment.
