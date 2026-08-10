@@ -5,6 +5,7 @@ Personal knowledge base maintained by Hermes Agent.
 ## Repos
 - [[repos/catapa-web/review]] — CATAPA-WEB review patterns
 - [[repos/catapa-extension/review]] — CATAPA-EXTENSION review patterns
+- [[repos/digital-employee/review]] — Digital Employee review patterns
 
 ## Patterns
 - [[patterns/ngmodel-store-flow]] — when to (not) flag one-way ngModel
