@@ -28,6 +28,14 @@ updated: 2026-08-10
 - avoid: Do not rely on ad-hoc `.txt` allowlists, hardcoded static source specs, stale `outputPath` fields, or raw script names like `generate_openapi_fragments.sh` in docs.
 - example: `make generate-api-docs` in `common/applications/digital-employee-employee-assistant` regenerates the committed ESS/MSS API docs from manifests.
 
+### CATAPA live Swagger nondeterministic output
+
+- trigger: `common/agents/catapa_api_agent/scripts/extract_paths_fragment.py`, generated `references/api-docs/*.json`
+- learned_from: GDP-ADMIN/digital-employee#1417 feedback implementation
+- rule: After changing CATAPA API docs generation, run `make generate-api-docs` repeatedly and ensure the working tree stays clean. Live Swagger may reorder maps/`oneOf` arrays or alternate ignored write-only `$ref` siblings, so generation should compare normalized semantics before rewriting committed fragments.
+- avoid: Do not commit churn-only regenerated API docs caused by live Swagger ordering or equivalent write-only `$ref` noise.
+- example: The fragment writer should report `unchanged ... private-endpoint-*.json` when regenerated docs are semantically equivalent.
+
 ## Reviewer Preferences
 
 - Prefer wiring recurring DE maintenance commands into the DE-local `Makefile` so contributors can use a one-liner instead of remembering long raw script paths.
@@ -36,3 +44,4 @@ updated: 2026-08-10
 ## Build / Test Quirks
 
 - The standalone `common/agents/catapa_api_agent` package may need test-only extras when run directly, for example: `uv run --with pytest --with pytest-asyncio --with 'glaip-sdk[local]' pytest tests -q`.
+- For CATAPA API docs generator changes, pair common-agent checks (`uv run --with pytest --with pytest-asyncio --with ruff --with pyyaml --with 'glaip-sdk[local]' ruff check ...` plus relevant pytest files) with the consumer DE `make generate-api-docs` target and verify no generated JSON diff remains.
