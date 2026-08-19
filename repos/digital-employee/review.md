@@ -1,7 +1,7 @@
 ---
 title: Digital Employee review patterns
 repo: GDP-ADMIN/digital-employee
-updated: 2026-08-11
+updated: 2026-08-19
 ---
 
 # Digital Employee Review Patterns
@@ -35,6 +35,14 @@ updated: 2026-08-11
 - rule: When removing a package subdirectory, update `[tool.setuptools].packages` and `[tool.setuptools.package-data]` in the common package before running standalone `uv run ...` checks.
 - avoid: Do not leave `catapa_api_agent.scripts` or `scripts/*` package-data entries after deleting `common/agents/catapa_api_agent/scripts`; editable builds fail with `error: package directory './scripts' does not exist`.
 - example: `uv run --with pytest --with pytest-asyncio --with ruff --with pyyaml --with 'glaip-sdk[local]' ruff check .` catches stale setuptools package entries.
+
+### CATAPA ESS/MSS entry mutation multipart contracts
+
+- trigger: `common/agents/catapa_api_agent/tools/catapa_private_api/**`, `catapa-ess-mss/references/self-service.md`, ESS/MSS absence/leave/overtime/presence entry writes
+- learned_from: GDP-ADMIN/digital-employee#1417 feedback implementation and live CATAPA absence-entry contract verification
+- rule: ESS entry create/update endpoints use `multipart=true` with one named JSON part (`absenceEntry`, `leaveEntry`/`leaveEntries`, `overtimeEntry`, or `presenceEntry`). Absence creation also needs a resolved CATAPA `attendanceStatus` object plus caller `offset`, `startDate`, and `endDate`; user text such as `sakit` is not an attendance-status ID.
+- avoid: Do not let agents call these entry write endpoints with raw JSON-only bodies, free-text absence reasons in place of `attendanceStatus`, or a generic success event without read-back verification.
+- example: `POST /timemanagement/employees/me/absence-entries` should send `multipart=true` and `{"absenceEntry":{"attendanceStatus":{"id":"<resolved-status-id>"},"offset":"+07:00","startDate":"YYYY-MM-DD","endDate":"YYYY-MM-DD"}}`.
 
 ## Reviewer Preferences
 
